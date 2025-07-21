@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indonesia Economic Growth Model</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #FF5722, #E91E63);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .parameter-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .parameter-group h3 {
+            margin-top: 0;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .parameter {
+            margin-bottom: 15px;
+        }
+        
+        .parameter label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .parameter input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .parameter input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .parameter input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .parameter .value-display {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 14px;
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .results h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .growth-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .scenario-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .scenario-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .insights {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .insights h3 {
+            color: #28a745;
+            margin-top: 0;
+        }
+        
+        .flag {
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="flag">🇮🇩</span>Indonesia Economic Growth Model</h1>
+            <p>Interactive tool to explore economic growth scenarios and policy impacts</p>
+        </div>
+        
+        <div class="scenario-buttons">
+            <button class="scenario-btn" onclick="loadScenario('baseline')">Current Baseline</button>
+            <button class="scenario-btn" onclick="loadScenario('infrastructure')">Infrastructure Push</button>
+            <button class="scenario-btn" onclick="loadScenario('digital')">Digital Economy</button>
+            <button class="scenario-btn" onclick="loadScenario('green')">Green Transition</button>
+            <button class="scenario-btn" onclick="loadScenario('reform')">Reform Package</button>
+            <button class="scenario-btn" onclick="loadScenario('headwinds')">Global Headwinds</button>
+        </div>
+        
+        <div class="parameter-grid">
+            <div class="parameter-group">
+                <h3>💰 Investment & Capital</h3>
+                <div class="parameter">
+                    <label for="investment">Investment/GDP Ratio</label>
+                    <input type="range" id="investment" min="0.20" max="0.45" step="0.01" value="0.32">
+                    <div class="value-display" id="investment-value">32%</div>
+                </div>
+                <div class="parameter">
+                    <label for="infrastructure">Infrastructure Investment/GDP</label>
+                    <input type="range" id="infrastructure" min="0.02" max="0.12" step="0.01" value="0.05">
+                    <div class="value-display" id="infrastructure-value">5%</div>
+                </div>
+            </div>
+            
+            <div class="parameter-group">
+                <h3>🚀 Productivity & Innovation</h3>
+                <div class="parameter">
+                    <label for="tfp">Total Factor Productivity Growth</label>
+                    <input type="range" id="tfp" min="0.005" max="0.035" step="0.005" value="0.015">
+                    <div class="value-display" id="tfp-value">1.5%</div>
+                </div>
+                <div class="parameter">
+                    <label for="export">Export Growth Rate</label>
+                    <input type="range" id="export" min="0.01" max="0.10" step="0.01" value="0.05">
+                    <div class="value-display" id="export-value">5%</div>
+                </div>
+            </div>
+            
+            <div class="parameter-group">
+                <h3>👥 Demographics</h3>
+                <div class="parameter">
+                    <label for="population">Population Growth Rate</label>
+                    <input type="range" id="population" min="0.005" max="0.015" step="0.001" value="0.009">
+                    <div class="value-display" id="population-value">0.9%</div>
+                </div>
+            </div>
+            
+            <div class="parameter-group">
+                <h3>⚖️ Risk & Stability</h3>
+                <div class="parameter">
+                    <label for="stability">Political Stability Index</label>
+                    <input type="range" id="stability" min="0.4" max="0.9" step="0.05" value="0.70">
+                    <div class="value-display" id="stability-value">0.70</div>
+                </div>
+                <div class="parameter">
+                    <label for="disaster">Natural Disaster Risk</label>
+                    <input type="range" id="disaster" min="0.005" max="0.040" step="0.005" value="0.020">
+                    <div class="value-display" id="disaster-value">2.0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <h2>📊 Growth Projection Results</h2>
+            <div class="growth-display" id="growth-rate">5.55%</div>
+            
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value" id="gdp-10year">72%</div>
+                    <div class="metric-label">10-Year GDP Growth</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="per-capita">$1,360</div>
+                    <div class="metric-label">Per Capita Increase</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="policy-impact">Baseline</div>
+                    <div class="metric-label">Scenario</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="risk-level">Medium</div>
+                    <div class="metric-label">Risk Level</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="insights">
+            <h3>💡 Key Insights & Recommendations</h3>
+            <div id="insights-text">
+                Adjust the parameters above to see how different policies and conditions affect Indonesia's economic growth.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Economic growth calculation function
+        function calculateGrowth(params) {
+            var capital = (params.investment / 3.2) * 0.3;
+            var labor = (params.population_growth * 0.68) * 0.6;
+            var productivity = params.tfp_growth;
+            var supply = capital + labor + productivity;
+            
+            var consumption = (0.04 + params.population_growth + params.tfp_growth * 0.5) * 0.57;
+            var investment = (0.06 + params.infrastructure * 2) * params.investment;
+            var exports = params.export_growth * 0.4;
+            var demand = consumption + investment + 0.0024 + exports;
+            
+            var base = 0.6 * supply + 0.4 * demand;
+            var adjustments = (params.stability - 0.5) * 0.02 - params.disaster_risk;
+            
+            return (base + adjustments) * 100;
+        }
+        
+        // Get current parameter values
+        function getCurrentParams() {
+            return {
+                investment: parseFloat(document.getElementById('investment').value),
+                population_growth: parseFloat(document.getElementById('population').value),
+                tfp_growth: parseFloat(document.getElementById('tfp').value),
+                infrastructure: parseFloat(document.getElementById('infrastructure').value),
+                export_growth: parseFloat(document.getElementById('export').value),
+                stability: parseFloat(document.getElementById('stability').value),
+                disaster_risk: parseFloat(document.getElementById('disaster').value)
+            };
+        }
+        
+        // Update parameter display values
+        function updateDisplayValues() {
+            document.getElementById('investment-value').textContent = 
+                (parseFloat(document.getElementById('investment').value) * 100).toFixed(0) + '%';
+            document.getElementById('infrastructure-value').textContent = 
+                (parseFloat(document.getElementById('infrastructure').value) * 100).toFixed(0) + '%';
+            document.getElementById('tfp-value').textContent = 
+                (parseFloat(document.getElementById('tfp').value) * 100).toFixed(1) + '%';
+            document.getElementById('export-value').textContent = 
+                (parseFloat(document.getElementById('export').value) * 100).toFixed(0) + '%';
+            document.getElementById('population-value').textContent = 
+                (parseFloat(document.getElementById('population').value) * 100).toFixed(1) + '%';
+            document.getElementById('stability-value').textContent = 
+                parseFloat(document.getElementById('stability').value).toFixed(2);
+            document.getElementById('disaster-value').textContent = 
+                (parseFloat(document.getElementById('disaster').value) * 100).toFixed(1) + '%';
+        }
+        
+        // Update the economic model and display results
+        function updateModel() {
+            updateDisplayValues();
+            
+            var params = getCurrentParams();
+            var growthRate = calculateGrowth(params);
+            
+            document.getElementById('growth-rate').textContent = growthRate.toFixed(2) + '%';
+            
+            var tenYearGrowth = ((Math.pow(1 + growthRate/100, 10) - 1) * 100);
+            document.getElementById('gdp-10year').textContent = tenYearGrowth.toFixed(0) + '%';
+            
+            var perCapitaIncrease = (tenYearGrowth / 100) * 4800;
+            document.getElementById('per-capita').textContent = '$' + perCapitaIncrease.toFixed(0);
+            
+            var riskLevel = 'Low';
+            if (params.disaster_risk > 0.025 || params.stability < 0.65) riskLevel = 'High';
+            else if (params.disaster_risk > 0.02 || params.stability < 0.75) riskLevel = 'Medium';
+            document.getElementById('risk-level').textContent = riskLevel;
+            
+            generateInsights(params, growthRate);
+        }
+        
+        // Generate dynamic insights
+        function generateInsights(params, growthRate) {
+            var insights = [];
+            
+            if (growthRate >= 7.0) {
+                insights.push("🚀 <strong>Excellent growth trajectory!</strong> This level supports rapid economic development.");
+            } else if (growthRate >= 6.0) {
+                insights.push("📈 <strong>Strong growth potential.</strong> Well above regional average and sustainable.");
+            } else if (growthRate >= 5.0) {
+                insights.push("✅ <strong>Solid baseline growth.</strong> Room for improvement through targeted policies.");
+            } else {
+                insights.push("⚠️ <strong>Below potential.</strong> Significant policy interventions needed.");
+            }
+            
+            if (params.investment < 0.30) {
+                insights.push("💡 <strong>Investment boost needed:</strong> Increasing investment ratio to 35%+ could add 0.5-1.0% growth.");
+            }
+            
+            if (params.tfp_growth < 0.015) {
+                insights.push("🧠 <strong>Productivity focus:</strong> R&D investment and education reforms could significantly boost TFP growth.");
+            }
+            
+            if (params.infrastructure < 0.06) {
+                insights.push("🏗️ <strong>Infrastructure opportunity:</strong> Higher infrastructure spending has high multiplier effects.");
+            }
+            
+            if (params.stability < 0.75) {
+                insights.push("⚖️ <strong>Governance matters:</strong> Political stability improvements could unlock additional growth.");
+            }
+            
+            if (growthRate < 6.0) {
+                insights.push("🎯 <strong>Policy mix for 6%+ growth:</strong> Combine infrastructure (7-8% GDP), productivity boost (2%+ TFP), and investment climate reforms.");
+            }
+            
+            document.getElementById('insights-text').innerHTML = insights.join('<br><br>');
+        }
+        
+        // Predefined scenarios
+        var scenarios = {
+            baseline: {
+                investment: 0.32, population_growth: 0.009, tfp_growth: 0.015,
+                infrastructure: 0.05, export_growth: 0.05, stability: 0.70, disaster_risk: 0.020
+            },
+            infrastructure: {
+                investment: 0.36, population_growth: 0.009, tfp_growth: 0.018,
+                infrastructure: 0.08, export_growth: 0.055, stability: 0.80, disaster_risk: 0.015
+            },
+            digital: {
+                investment: 0.34, population_growth: 0.009, tfp_growth: 0.025,
+                infrastructure: 0.06, export_growth: 0.07, stability: 0.75, disaster_risk: 0.020
+            },
+            green: {
+                investment: 0.33, population_growth: 0.009, tfp_growth: 0.022,
+                infrastructure: 0.06, export_growth: 0.065, stability: 0.75, disaster_risk: 0.015
+            },
+            reform: {
+                investment: 0.35, population_growth: 0.009, tfp_growth: 0.020,
+                infrastructure: 0.07, export_growth: 0.06, stability: 0.80, disaster_risk: 0.018
+            },
+            headwinds: {
+                investment: 0.28, population_growth: 0.009, tfp_growth: 0.010,
+                infrastructure: 0.04, export_growth: 0.025, stability: 0.65, disaster_risk: 0.025
+            }
+        };
+        
+        // Load a predefined scenario
+        function loadScenario(scenarioName) {
+            var scenario = scenarios[scenarioName];
+            if (!scenario) return;
+            
+            document.getElementById('investment').value = scenario.investment;
+            document.getElementById('population').value = scenario.population_growth;
+            document.getElementById('tfp').value = scenario.tfp_growth;
+            document.getElementById('infrastructure').value = scenario.infrastructure;
+            document.getElementById('export').value = scenario.export_growth;
+            document.getElementById('stability').value = scenario.stability;
+            document.getElementById('disaster').value = scenario.disaster_risk;
+            
+            var scenarioLabels = {
+                baseline: 'Current Baseline', infrastructure: 'Infrastructure Push', 
+                digital: 'Digital Economy', green: 'Green Transition',
+                reform: 'Reform Package', headwinds: 'Global Headwinds'
+            };
+            
+            document.getElementById('policy-impact').textContent = scenarioLabels[scenarioName];
+            updateModel();
+        }
+        
+        // Add event listeners to all sliders
+        function setupEventListeners() {
+            var sliders = ['investment', 'infrastructure', 'tfp', 'export', 'population', 'stability', 'disaster'];
+            for (var i = 0; i < sliders.length; i++) {
+                var slider = document.getElementById(sliders[i]);
+                if (slider) {
+                    slider.addEventListener('input', updateModel);
+                    slider.addEventListener('change', updateModel);
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            setupEventListeners();
+            updateModel();
+        });
+    </script>
+</body>
+</html>
